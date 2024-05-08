@@ -6,18 +6,21 @@ import configparser
 import logging
 import json
 
-# Basic Setup for the ConfigParser
+# == Configuration Init ==
+# Load the configuration file
 config = configparser.ConfigParser()
 config.read('.\config.cfg')
 settings = config['DEFAULT']
 channel_id = config['CHANNEL ID']
 
+# == Localization Feature ==
 # Load language that is selected in the config file
 language = settings['language']
 with open(f'language/{language}.json', 'r', encoding='utf-8') as lang_file:
     lang = json.load(lang_file)
 
-# Basic Setup for the Log File Writer
+# == Log Generator ==
+# Initializes Log File for write operation
 logging.basicConfig(
     filename='bot.log',
     level=logging.INFO,
@@ -26,6 +29,7 @@ logging.basicConfig(
     encoding='utf-8'
     )
 
+# == Discord Library Setting ==
 # Intends settings for the Discord Library
 intents = discord.Intents.default()
 intents.message_content = True
@@ -34,6 +38,7 @@ intents.typing = False
 
 client = commands.Bot(command_prefix="!", intents=intents)
 
+# == Bot Start Up ==
 # Detect if the Bot is able to Log In with the given token
 @client.event
 async def on_ready():
@@ -43,21 +48,21 @@ async def on_ready():
 @client.event
 async def on_voice_state_update(member, before, after):
     
-    # ================ Create Embed Type Message ================
+    # ================ Create Embed Type Message ==========================
     def sendMsg(streamType, member, channel) -> discord.Embed:
         embed = discord.Embed(
             title=f""+streamType+" "+lang["stream_alert"]+" 』  📢", 
             description="", 
-            color=0x3C87EA # Line Color of the Left Card
+            color=0x3C87EA      # Line Color of the Left Card
             ) 
-        # Print Only the Username if Username and Nickname is the same
+        # Print Only the Username if Username and Nickname are the same
         if ("{}".format(member.nick) == "None"):
             embed.add_field(
                 name=f"【 "+lang["user"]+" 】", 
                 value="- {}".format(member), 
                 inline=False
                 )
-        # Print Both if Username and Nickname is different
+        # Print Both if Username and Nickname are different
         else:
             embed.add_field(
                 name=f"【 "+lang["user"]+" 】", 
